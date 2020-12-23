@@ -20,11 +20,30 @@ export const getPackageManifest = (project: Project, pkg: Package) => {
       ("/" + packageLocation.slice(0, -1).replace(/\\/g, '/')) as any,
     Filename.manifest
   );
-  console.log(packageLocation, Filename.manifest);
-  console.dir(portablePath);
   const packageJson = fs.readFileSync(portablePath).toString();
 
   return JSON.parse(packageJson);
+};
+
+export const getLicense = (project: Project, pkg: Package) => {
+  makePnPApi(project);
+
+  const locator = structUtils.convertPackageToLocator(pkg);
+  const pnpLocator = {
+    name: structUtils.stringifyIdent(locator),
+    reference: locator.reference,
+  };
+
+  const packageInformation = pnpApi.getPackageInformation(pnpLocator);
+  if (!packageInformation) return;
+
+  const { packageLocation } = packageInformation;
+  const portablePath: PortablePath = ppath.join(
+      ("/" + packageLocation.slice(0, -1).replace(/\\/g, '/')) as any,
+      "LICENSE" as any
+  );
+  const license = fs.readFileSync(portablePath).toString();
+  return license;
 };
 
 let pnpApi;

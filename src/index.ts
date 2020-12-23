@@ -12,6 +12,7 @@ import {
 } from "@yarnpkg/core";
 import { Command, Usage } from "clipanion";
 import { resolveLinker } from "./linkers";
+import {LicensesHtmlCommand} from "./commands/html";
 
 class LicensesListCommand extends Command<CommandContext> {
   @Command.Boolean(`-R,--recursive`)
@@ -65,12 +66,12 @@ class LicensesListCommand extends Command<CommandContext> {
 }
 
 const plugin: Plugin = {
-  commands: [LicensesListCommand],
+  commands: [LicensesListCommand, LicensesHtmlCommand],
 };
 
 export default plugin;
 
-const getTree = async (project: Project, json: boolean, recursive: boolean) => {
+export const getTree = async (project: Project, json: boolean, recursive: boolean): Promise<treeUtils.TreeNode> => {
   const rootChildren: treeUtils.TreeMap = {};
   const root: treeUtils.TreeNode = { children: rootChildren };
 
