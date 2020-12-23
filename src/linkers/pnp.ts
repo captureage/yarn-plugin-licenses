@@ -1,13 +1,7 @@
-import { getPnpPath } from "@yarnpkg/plugin-pnp";
-import { Package, Project, structUtils } from "@yarnpkg/core";
-import {
-  VirtualFS,
-  ZipOpenFS,
-  Filename,
-  PortablePath,
-  ppath,
-} from "@yarnpkg/fslib";
-import { getLibzipSync } from "@yarnpkg/libzip";
+import {Package, Project, structUtils} from "@yarnpkg/core";
+import {Filename, PortablePath, ppath, VirtualFS, ZipOpenFS,} from "@yarnpkg/fslib";
+import {getLibzipSync} from "@yarnpkg/libzip";
+import {getPnpPath} from "@yarnpkg/plugin-pnp";
 
 export const getPackageManifest = (project: Project, pkg: Package) => {
   makePnPApi(project);
@@ -23,9 +17,11 @@ export const getPackageManifest = (project: Project, pkg: Package) => {
 
   const { packageLocation } = packageInformation;
   const portablePath: PortablePath = ppath.join(
-    packageLocation,
+      ("/" + packageLocation.slice(0, -1).replace(/\\/g, '/')) as any,
     Filename.manifest
   );
+  console.log(packageLocation, Filename.manifest);
+  console.dir(portablePath);
   const packageJson = fs.readFileSync(portablePath).toString();
 
   return JSON.parse(packageJson);
@@ -36,7 +32,7 @@ const makePnPApi = (project: Project) => {
   if (!pnpApi) {
     // use `eval` so webpack leaves this alone
     // tslint:disable-next-line:no-eval
-    pnpApi = eval("module.require")(getPnpPath(project).main);
+    pnpApi = eval("module.require")(getPnpPath(project).main.substr(1));
   }
 };
 
